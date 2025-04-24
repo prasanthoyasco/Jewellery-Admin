@@ -1,0 +1,8 @@
+::placeholder {
+    color: rgba(108, 117, 125, 0.6); 
+  }
+  @media (max-width: 575.98px) {
+    .small-on-mobile {
+      font-size: 0.7rem;
+    }
+  }
