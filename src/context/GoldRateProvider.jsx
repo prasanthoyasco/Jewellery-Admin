@@ -12,7 +12,7 @@ const GoldRateProvider = ({ children }) => {
     try {
       const data = await getGoldRates();
       const formattedRates = {};
-      if (data && data.data) {
+      if (data.status === 200){
         data.data.forEach(rate => {
           formattedRates[rate.karat] = rate;
         });
