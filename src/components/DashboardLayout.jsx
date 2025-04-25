@@ -49,14 +49,26 @@ export default function DashboardLayout() {
               </li>
               <li className="nav-item mt-2">
                 <Link
-                  to="/upload"
+                  to="/add-product"
                   className={`nav-link rounded transition-all ${
-                    pathname === "/upload"
+                    pathname === "/add-product"
                       ? "bg-primary text-white fw-semibold"
                       : "hover:bg-light"
                   }`}
                 >
-                  Upload Product
+                  Add New Product
+                </Link>
+              </li>
+              <li className="nav-item mt-2">
+                <Link
+                  to="/allproduct"
+                  className={`nav-link rounded transition-all ${
+                    pathname === "/allproduct" || pathname.startsWith("/edit-product/")
+                      ? "bg-primary text-white fw-semibold"
+                      : "hover:bg-light"
+                  }`}
+                >
+                  All Product List
                 </Link>
               </li>
             </ul>

@@ -1,12 +1,15 @@
 import React, { useState, useRef } from "react";
 import { uploadProduct } from "../api/productApi";
 
-export default function UploadProductPage() {
+export default function AddProduct() {
   const fileInputRef = useRef(null);
+  const [preview, setPreview] = useState(null);
+  const [fileError, setFileError] = useState(""); // State for file type error
 
   const [formData, setFormData] = useState({
     name: "",
     shortdiscription: "",
+    productid: "",
     karat: "",
     weight: "",
     makingCost: "",
@@ -15,23 +18,40 @@ export default function UploadProductPage() {
   });
 
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "file" ? files[0] : value,
-    }));
+    const { name, value, files } = e.target;
+    setFileError(""); // Clear any previous error
+
+    if (name === "image" && files && files[0]) {
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+      if (allowedTypes.includes(files[0].type)) {
+        setPreview(URL.createObjectURL(files[0]));
+        setFormData((prev) => ({ ...prev, image: files[0] }));
+      } else {
+        setFileError("Please upload a valid image file (JPEG, PNG, GIF, or WebP).");
+        setPreview(null);
+        setFormData((prev) => ({ ...prev, image: null }));
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""; // Clear the invalid file selection
+        }
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const resetForm = () => {
     setFormData({
       name: "",
       shortdiscription: "",
+      productid: "",
       karat: "",
       weight: "",
       makingCost: "",
       wastage: "",
       image: null,
     });
+    setPreview(null);
+    setFileError("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -42,7 +62,8 @@ export default function UploadProductPage() {
 
     const productForm = new FormData();
     productForm.append("name", formData.name);
-    productForm.append('shortdiscription', formData.shortdiscription);
+    productForm.append("shortdiscription", formData.shortdiscription);
+    productForm.append("productid", formData.productid);
     productForm.append("karat", formData.karat);
     productForm.append("weight", formData.weight);
     productForm.append("makingCostPercent", formData.makingCost);
@@ -105,6 +126,21 @@ export default function UploadProductPage() {
           </div>
 
           <div className="col-md-6">
+            <label htmlFor="productid" className="form-label fw-semibold">
+              Product ID
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="productid"
+              name="productid"
+              value={formData.productid}
+              onChange={handleChange}
+              placeholder="e.g. P1010"
+            />
+          </div>
+
+          <div className="col-md-6">
             <label htmlFor="karat" className="form-label fw-semibold">
               Karat
             </label>
@@ -150,7 +186,7 @@ export default function UploadProductPage() {
               name="makingCost"
               value={formData.makingCost}
               onChange={handleChange}
-              placeholder="e.g. 10"
+              placeholder="e.g. 10.25"
             />
           </div>
 
@@ -165,7 +201,7 @@ export default function UploadProductPage() {
               name="wastage"
               value={formData.wastage}
               onChange={handleChange}
-              placeholder="e.g. 2"
+              placeholder="e.g. 2.5"
             />
           </div>
 
@@ -180,7 +216,17 @@ export default function UploadProductPage() {
               name="image"
               onChange={handleChange}
               ref={fileInputRef}
+              accept="image/jpeg, image/png, image/gif, image/webp"
             />
+            {fileError && <div className="text-danger">{fileError}</div>}
+            {preview && (
+              <img
+                src={preview}
+                alt="Image Preview"
+                className="mt-2 rounded"
+                style={{ maxWidth: "100px", maxHeight: "100px" }}
+              />
+            )}
           </div>
 
           <div className="col-12 mt-3">
