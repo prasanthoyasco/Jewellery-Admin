@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { uploadProduct } from "../api/productApi";
+import { AddNewProduct } from "../api/productApi";
 
 export default function AddProduct() {
   const fileInputRef = useRef(null);
@@ -73,17 +73,17 @@ export default function AddProduct() {
     }
 
     try {
-      const res = await uploadProduct(productForm);
+      const res = await AddNewProduct(productForm);
       console.log("Upload response:", res.data);
       if (res.data && res.data._id) {
         alert("Product uploaded successfully!");
         resetForm();
       } else {
-        alert("❌Upload failed. Please try again.");
+        alert("Upload failed. Please try again.");
       }
     } catch (err) {
       console.error(err);
-      alert("❌ An error occurred. Please try again.");
+      alert("An error occurred. Please try again.");
     }
   };
 

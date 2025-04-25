@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductsbyid } from '../api/productApi';
+import { getProductsbyid, updateProductById } from '../api/productApi';
 
 const EditProduct = () => {
   const { id } = useParams();
@@ -11,7 +10,7 @@ const EditProduct = () => {
   const [formData, setFormData] = useState({
     name: '',
     shortdiscription: '',
-    productid:"",
+    productid: '',
     karat: '',
     weight: '',
     makingCostPercent: '',
@@ -55,10 +54,10 @@ const EditProduct = () => {
         setFormData((prev) => ({ ...prev, image: files[0] }));
       } else {
         setFileError('Please upload a valid image file (JPEG, PNG, GIF, or WebP).');
-        setPreview(preview); // Keep the previous preview
+        setPreview(preview); 
         setFormData((prev) => ({ ...prev, image: null }));
         if (fileInputRef.current) {
-          fileInputRef.current.value = ''; // Clear the invalid file selection
+          fileInputRef.current.value = ''; 
         }
       }
     } else {
@@ -87,20 +86,26 @@ const EditProduct = () => {
     e.preventDefault();
 
     const data = new FormData();
+    
+    // Append 'productid' to FormData explicitly
+    data.append('productid', formData.productid);
+
+    // Append the rest of the fields to FormData
     Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null) data.append(key, value);
+      if (key !== 'productid' && value !== null) {
+        data.append(key, value);
+      }
     });
 
     try {
-      await axios.put(`/api/products/${id}`, data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      resetForm();
+      await updateProductById(id, data);
+      alert('Updated Sucessfully');
       navigate('/allproduct');
     } catch (err) {
       console.error('Update failed', err);
       alert('❌ Update failed. Please try again.');
     }
+    resetForm();
   };
 
   return (
@@ -149,7 +154,6 @@ const EditProduct = () => {
               id="productid"
               name="productid"
               value={formData.productid}
-              onChange={handleChange}
               readOnly
               disabled
             />
